@@ -1,0 +1,15 @@
+# Module: nginx
+# Docs: https://www.elastic.co/guide/en/beats/filebeat/7.5/filebeat-module-nginx.html
+
+- module: nginx
+  # Access logs
+  access:
+    enabled: true
+    var.paths: ["/home/stas/dev/logs/nginx/access.log"]
+    input:
+      exclude_files: ['.gz$']
+
+  # Error logs
+  error:
+    enabled: true
+    var.paths: ["/home/stas/dev/logs/nginx/error.log"]

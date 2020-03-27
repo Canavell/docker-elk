@@ -3,11 +3,24 @@
 ## https://github.com/elastic/elasticsearch/blob/master/distribution/docker/src/docker/config/elasticsearch.yml
 #
 cluster.name: "docker-cluster"
-network.host: 0.0.0.0
+
 
 ## X-Pack settings
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-xpack.html
 #
-xpack.license.self_generated.type: trial
-xpack.security.enabled: true
+xpack.license.self_generated.type: basic
 xpack.monitoring.collection.enabled: true
+
+node.name: elastic
+network.host: 0.0.0.0
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.http.ssl.key: /usr/share/elasticsearch/config/elastic.key
+xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/elastic.crt
+xpack.security.http.ssl.certificate_authorities: /usr/share/elasticsearch/config/rootCA.crt
+xpack.security.transport.ssl.key:  /usr/share/elasticsearch/config/elastic.key
+xpack.security.transport.ssl.certificate: /usr/share/elasticsearch/config/elastic.crt
+xpack.security.transport.ssl.certificate_authorities: /usr/share/elasticsearch/config/rootCA.crt
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.http.ssl.verification_mode: certificate

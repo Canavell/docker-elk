@@ -1,0 +1,46 @@
+name: status_500
+
+# Type of alert.
+
+type: frequency
+
+# Index to search, wildcard supported
+index: filebeat-*
+
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 1
+timestamp_field: "@timestamp"
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  minutes: 1
+
+# (Required)
+# A list of Elasticsearch filters used for find events
+# These filters are joined with AND and nested in a filtered query
+# For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
+filter:
+#- term:
+#    status: "200"
+- query:
+    query_string:
+      query: "http.response.status_code: 500"
+
+#realert which is the minimum time between two alerts for the same rule. 
+realert:
+  minutes: 5
+#You can also prevent duplicates based on a certain field by using query_key.
+#realert:
+  #hours: 8
+#query_key: user
+
+# The alert is use when a match is found
+alert:
+- "email"
+
+email:
+- "evglevsckij.stanislav@gmail.com"
+smtp_host: "smtp.gmail.com" #for google email addresses
+smtp_port: 465 #for google email addresses
+smtp_ssl: true
+from_addr: "m5smtp.sender@gmail.com"
+smtp_auth_file: "/opt/elastalert/smtp_auth_file.yaml"

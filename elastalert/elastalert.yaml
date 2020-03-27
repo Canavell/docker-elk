@@ -1,0 +1,24 @@
+rules_folder: rules
+
+run_every:
+  minutes: 1
+
+buffer_time:
+  minutes: 15
+
+es_host: elasticsearch
+es_username: elastic
+es_password: changeme
+es_port: 9200
+
+use_ssl: True
+verify_certs: True
+ca_certs: /opt/elastalert/rootCA.crt
+
+writeback_index: elastalert_status
+writeback_alias: elastalert_alerts
+
+# If an alert fails for some reason, ElastAlert will retry
+# sending the alert until this time period has elapsed
+alert_time_limit:
+  days: 2

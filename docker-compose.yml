@@ -2,6 +2,7 @@ version: '3.2'
 
 services:
   elasticsearch:
+    container_name: elasticsearch
     build:
       context: elasticsearch/
       args:
@@ -14,9 +15,11 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
+      - ./ssl/certs/elastic.crt:/usr/share/elasticsearch/config/elastic.crt
+      - ./ssl/certs/elastic.key:/usr/share/elasticsearch/config/elastic.key
+      - ./ssl/certs/rootCA.crt:/usr/share/elasticsearch/config/rootCA.crt
     ports:
       - "9200:9200"
-      - "9300:9300"
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       ELASTIC_PASSWORD: changeme
@@ -25,33 +28,8 @@ services:
       discovery.type: single-node
     networks:
       - elk
-
-  logstash:
-    build:
-      context: logstash/
-      args:
-        ELK_VERSION: $ELK_VERSION
-    volumes:
-      - type: bind
-        source: ./logstash/config/logstash.yml
-        target: /usr/share/logstash/config/logstash.yml
-        read_only: true
-      - type: bind
-        source: ./logstash/pipeline
-        target: /usr/share/logstash/pipeline
-        read_only: true
-    ports:
-      - "5000:5000/tcp"
-      - "5000:5000/udp"
-      - "9600:9600"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
-
   kibana:
+    container_name: kibana
     build:
       context: kibana/
       args:
@@ -61,8 +39,26 @@ services:
         source: ./kibana/config/kibana.yml
         target: /usr/share/kibana/config/kibana.yml
         read_only: true
+      - ./ssl/certs/:/usr/share/kibana/elk-ssl/
     ports:
       - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+  elastalert:
+    container_name: elastalert
+    image: bitsensor/elastalert:3.0.0-beta.0
+    volumes:
+      - ./elastalert/elastalert.yaml:/opt/elastalert/config.yaml
+      - ./elastalert/config.json:/opt/elastalert-server/config/config.json
+      - ./elastalert/rules:/opt/elastalert/rules
+      - ./elastalert/rule_templates:/opt/elastalert/rule_templates
+      - ./ssl/certs/rootCA.crt:/opt/elastalert/rootCA.crt
+      - ./elastalert/smtp_auth_file.yaml:/opt/elastalert/smtp_auth_file.yaml
+    ports:
+      - "3030:3030"
+      - "3333:3333"
     networks:
       - elk
     depends_on:

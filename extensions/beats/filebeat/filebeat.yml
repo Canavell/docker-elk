@@ -1,0 +1,31 @@
+filebeat.overwrite_pipelines: true
+filebeat.inputs:
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+#setup.template.name: "filebeat"
+#setup.template.fields: "fields.yml"
+setup.template.overwrite: true
+setup.template.settings:
+  index.number_of_shards: 1
+
+setup.kibana:
+  host: "https://localhost:5601"
+  space.id: "kibana-space-id"
+  ssl.certificate_authorities: ["/home/stas/docker-elk/ssl/certs/rootCA.crt"]
+  ssl.verification_mode: none
+
+output.elasticsearch:
+  hosts: ["https://localhost:9200"]
+  username: "elastic"
+  password: "LmjvotjKjwU0G6OKYjHu"
+  ssl.certificate_authorities: ["/home/stas/docker-elk/ssl/certs/rootCA.crt"]
+  ssl.verification_mode: none
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
